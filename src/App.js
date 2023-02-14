@@ -1,5 +1,6 @@
 import React from "react"; // +0.5 pts si vous vous trouvez pourquoi il me faut l'import...
 import { useState } from 'react';
+import ReactSwitch from 'react-switch'
 
 function Square({ value, onSquareClick }) {
   return (
@@ -50,6 +51,7 @@ function Board({ xIsNext, squares, onPlay }) {
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+  const [movesReverse, setMovesReverse] = useState(false);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
@@ -63,7 +65,11 @@ export default function Game() {
     setCurrentMove(nextMove);
   }
 
-  const moves = history.map((squares, move) => {
+  function changedMovesOrder() {
+    setMovesReverse(!movesReverse);
+  }
+
+  let moves = history.map((squares, move) => {
     let description;
     if (move > 0) {
       description = 'Go to move #' + move;
@@ -76,6 +82,10 @@ export default function Game() {
       </li>
     );
   });
+  if (movesReverse) {
+    moves = moves.slice().reverse();
+    console.log('have reversed: '+movesReverse);
+  }
 
   return (
     <div className="game">
@@ -85,8 +95,9 @@ export default function Game() {
       <div className="game-info">
         <ol>
           {moves}
-          <li>You are at move #{ history.length }</li>
         </ol>
+        You are at move #{ history.length }<br />
+        Reverse moves order: <ReactSwitch checked={movesReverse} onChange={changedMovesOrder} />
       </div>
     </div>
   );
